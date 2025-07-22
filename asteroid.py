@@ -12,6 +12,15 @@ class Asteroid(CircleShape):
 
     def update(self, delta):
         self.position += self.velocity * delta
+        if self.position.x > SCREEN_WIDTH:
+            self.position.x -= SCREEN_WIDTH
+        if self.position.x < 0:
+            self.position.x += SCREEN_WIDTH
+        if self.position.y > SCREEN_HEIGHT:
+            self.position.y -= SCREEN_HEIGHT
+        if self.position.y < 0:
+            self.position.y += SCREEN_HEIGHT
+
 
     def split(self):
         old_velocity = self.velocity

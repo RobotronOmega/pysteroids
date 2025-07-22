@@ -9,9 +9,11 @@ from shot import Shot
 
 def main():
     pygame.init()
+    pygame.font.init()
+    font = pygame.font.Font("Hyperspace-JvEM.ttf", size=48)
     clock = pygame.time.Clock()
     dt = 0
-
+    gamestate = "play"
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
@@ -32,25 +34,45 @@ def main():
             if event.type == pygame.QUIT:
                 return
         
-        # update
-        for item in updatable:
-            item.update(dt)
+        if gamestate == "title":
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]:
+                gamestate = "play"
+            font.size = 64
+            fontsurface = font.render("PYSTEROIDS", True, "white")
+            font.size = 48
+            fontsurface2 = font.render("PRESS ENTER TO BEGIN", True, "white")
+            screen.fill("black")
+                    
+            screen.blit(fontsurface, (((SCREEN_WIDTH - fontsurface.get_width()) / 2),0))
+        
+        if gamestate == "play":
+            # update
+            for item in updatable:
+                item.update(dt)
 
-        # collisions
-        for item in asteroids:
-            if item.collide(player):
-                print("Game Over!")
-                sys.exit()
-        for item in asteroids:
-            for bullet in shots:
-                if item.collide(bullet):
-                    item.split()
-                    bullet.kill()
+            
 
-        # draw  
-        screen.fill("black")
-        for item in drawable:
-            item.draw(screen)
+            # collisions
+            for item in asteroids:
+                if item.collide(player):
+                    print("Game Over!")
+                    sys.exit()
+            for item in asteroids:
+                for bullet in shots:
+                    if item.collide(bullet):
+                        player.increase_score(item)
+                        item.split()
+                        bullet.kill()
+
+            # draw  
+            fontsurface = font.render(f"Score: {player.score}", True, "white")
+            screen.fill("black")
+            
+            for item in drawable:
+                item.draw(screen)
+            screen.blit(fontsurface, (((SCREEN_WIDTH - fontsurface.get_width()) / 2),0))
+
         pygame.display.flip()
         dt = clock.tick(60) / 1000
 
